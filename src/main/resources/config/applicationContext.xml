@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.3.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+	http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.3.xsd
+	http://www.springframework.org/schema/util
+	http://www.springframework.org/schema/util/spring-util-4.3.xsd
+	http://www.springframework.org/schema/task 
+	http://www.springframework.org/schema/task/spring-task-4.3.xsd
+	http://www.springframework.org/schema/cache
+    http://www.springframework.org/schema/cache/spring-cache.xsd">
+ 
+	<!-- <context:component-scan base-package="com.station.moudles" />  -->
+	<context:component-scan base-package="com.station.moudles.service.impl" />	
+	<!-- <context:component-scan base-package="com.station.moudles.dao.impl" /> -->
+	<context:component-scan base-package="com.station.common.cache"/>
+	<context:component-scan base-package="com.station.moudles.quartz"/>
+
+	<!-- 配置mybatis mapper接口 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.station.moudles.mapper" />
+		<property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate" />
+	</bean>
+	
+	<!-- 启用AOP注解 -->
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<!-- <bean id="myAspect" class="com.station.moudles.aspect.SystemLogAspect" /> -->
+
+	<!-- <util:properties id="settings"
+		location="classpath:/config/context.properties" /> -->
+	<!-- <context:property-placeholder location="classpath:/config/context.properties"/> -->
+	<!-- <bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:/config/context.properties</value>
+			</list>
+		</property>
+	</bean> -->
+	
+	<!--Spring Druid 数据源配置--> 
+	<!--数据源加密操作-->
+<!-- 	<bean id="dbPasswordCallback" class="com.station.common.spring.mybatis.DBPwdUtil" lazy-init="true"/>
+    <bean id="consoleDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">  
+        基本属性 url、user、password  
+        <property name="url" value="${jdbc.url}" />  
+        <property name="username" value="${jdbc.username}" />  
+        <property name="password" value="${jdbc.password}" />
+        配置初始化大小、最小、最大  
+        <property name="initialSize" value="20" />  
+        <property name="minIdle" value="20" />  
+        <property name="maxActive" value="800" />  
+        配置获取连接等待超时的时间  
+        <property name="maxWait" value="60000" />  
+        配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒  
+        <property name="timeBetweenEvictionRunsMillis" value="3600000" />  
+        配置一个连接在池中最小生存的时间，单位是毫秒  
+        <property name="minEvictableIdleTimeMillis" value="300000" />  
+        打开PSCache，并且指定每个连接上PSCache的大小  
+        <property name="poolPreparedStatements" value="true" />  
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20" /> 
+        
+        <property name="defaultAutoCommit" value="false" />
+        设置密码解密算法
+        <property name="connectionProperties" value="password=${jdbc.password}"/> 
+        <property name="passwordCallback" ref="dbPasswordCallback"/>
+        
+        开启Druid的监控统计功能
+        注意如果要用log4j一定要加上log4j
+        <property name="filters" value="stat,log4j" /> 
+    </bean>  -->
+
+	<!-- 配置写数据源  -->
+	<bean id="dbPasswordCallbackMaster" class="com.station.common.spring.mybatis.DBPwdUtil" lazy-init="true"/>
+	<bean id="dataSourceMaster" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.master.driver}" />
+		<property name="url" value="${jdbc.master.url}" />
+		<property name="username" value="${jdbc.master.username}" />
+		<property name="password" value="${jdbc.master.password}" />
+		  <!-- 配置初始化大小、最小、最大 -->  
+        <property name="initialSize" value="20" />  
+        <property name="minIdle" value="20" />  
+        <property name="maxActive" value="800" />  
+        <!-- 配置获取连接等待超时的时间 -->  
+        <property name="maxWait" value="60000" />  
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->  
+        <property name="timeBetweenEvictionRunsMillis" value="3600000" />  
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->  
+        <property name="minEvictableIdleTimeMillis" value="300000" />  
+        <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->  
+        <property name="poolPreparedStatements" value="true" />  
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20" /> 
+        
+        <property name="defaultAutoCommit" value="false" />
+        <!-- 设置密码解密算法 -->
+        <property name="connectionProperties" value="password=${jdbc.master.password}"/> 
+		<property name="passwordCallback" ref="dbPasswordCallbackMaster"/>
+		  <!-- 开启Druid的监控统计功能 -->
+        <!-- 注意如果要用log4j一定要加上log4j -->
+        <property name="filters" value="stat,log4j" /> 
+	</bean>
+
+	<!-- 配置读数据源 -->
+	<bean id="dbPasswordCallbackSlaver" class="com.station.common.spring.mybatis.DBPwdUtil" lazy-init="true"/>
+	<bean id="dataSourceSlaver" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.slaver.driver}" />
+		<property name="url" value="${jdbc.slaver.url}" />
+		<property name="username" value="${jdbc.slaver.username}" />
+		<property name="password" value="${jdbc.slaver.password}" />
+		  <!-- 配置初始化大小、最小、最大 -->  
+        <property name="initialSize" value="20" />  
+        <property name="minIdle" value="20" />  
+        <property name="maxActive" value="100" />  
+        <!-- 配置获取连接等待超时的时间 -->  
+        <property name="maxWait" value="60000" />  
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->  
+        <property name="timeBetweenEvictionRunsMillis" value="3600000" />  
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->  
+        <property name="minEvictableIdleTimeMillis" value="300000" />  
+        <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->  
+        <property name="poolPreparedStatements" value="true" />  
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20" /> 
+        
+        <property name="defaultAutoCommit" value="false" />
+        <!-- 设置密码解密算法 -->
+        <property name="connectionProperties" value="password=${jdbc.slaver.password}"/> 
+        <property name="passwordCallback" ref="dbPasswordCallbackSlaver"/>
+          <!-- 开启Druid的监控统计功能 -->
+        <!-- 注意如果要用log4j一定要加上log4j -->
+        <property name="filters" value="stat,log4j" /> 
+	</bean>
+
+	<bean id="dataSource" class="com.station.common.springdatasource.DynamicDataSource">
+		<!-- 通过key-value的形式来关联数据源 -->
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+                <!-- 这个key需要和程序中的key一致 -->
+                <entry key="master" value-ref="dataSourceMaster"/>
+                <entry key="slaver" value-ref="dataSourceSlaver"/>
+            </map>
+		</property>
+		 <!-- 设置默认的数据源，这里默认走写库 -->
+		<property name="defaultTargetDataSource" ref="dataSourceMaster" />
+	</bean>
+
+	<!-- JDBC事务 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+  
+	<!-- 定义通知 -->  
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="select*" read-only="true" />
+			<tx:method name="*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice> 
+	
+    <!-- 开启注解式事务控制 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<!-- 定义AOP切面处理器 -->
+	<bean class="com.station.common.springdatasource.DataSourceAspect" id="dataSourceAspect" />
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="interceptorPointCuts"
+			expression="execution(* com.station.moudles.service.impl.*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="interceptorPointCuts" />
+		<!-- 将切面应用到自定义的切面处理器上，-9999保证该切面优先级最高执行 -->
+		<aop:aspect ref="dataSourceAspect" order="-9999">
+			<aop:before method="before" pointcut-ref="interceptorPointCuts" />
+		</aop:aspect>
+	</aop:config>
+
+	<!-- 自动代理出错配置 -->
+	<!-- <aop:aspectj-autoproxy  proxy-target-class="true"/> -->
+	
+	<!-- MyBatis配置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:/config/mybatis-config.xml" />
+		<property name="mapperLocations" value="classpath:/mapper/*Mapper.xml" />
+	</bean>
+
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+
+
+	<task:annotation-driven />
+	<context:annotation-config />
+	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+
+	<bean class="com.station.common.cache.InitCache" />
+
+    <!-- Spring 线程池 -->
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <!-- 核心线程数 -->
+        <property name="corePoolSize" value="5"/>
+        <!-- 最大线程数 -->
+        <property name="maxPoolSize" value="50"/>
+        <!-- 队列最大长度 -->
+        <property name="queueCapacity" value="200"/>
+        <!-- 线程池维护线程所允许的空闲时间，默认为60s -->
+        <property name="keepAliveSeconds" value="300"/>
+        <property name="rejectedExecutionHandler">
+            <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
+        </property>
+    </bean>
+
+	<!-- 需要调度的任务 -->
+	<bean id="pulseDischargeTask" class="com.station.moudles.quartz.PulseDischargeTask" />
+
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="pulseDischargeTaskMethodInvoking"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="pulseDischargeTask" />
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="execute" />
+	</bean>
+ 
+	<!-- 触发器设置 设置这个任务触发器，每天凌晨执行一次 -->
+	<bean id="pulseDischargeTaskTriger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="pulseDischargeTaskMethodInvoking" />
+		</property>
+		<property name="cronExpression">
+			<!-- 格式解释：秒 分 时 日 月 年 -->
+			<value>0 0 2 ? * *  </value>
+		</property>
+	</bean>
+	
+	
+	<!-- 需要调度的任务 -->
+	<bean id="stationInfoTask" class="com.station.moudles.quartz.StationInfoTask" />
+
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="stationInfoTaskMethodInvoking"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="stationInfoTask" />
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="execute" />
+	</bean>
+
+	<!-- 触发器设置 设置这个任务触发器，凌晨2点执行一次 -->
+	<bean id="stationInfoTaskTriger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="stationInfoTaskMethodInvoking" />
+		</property>
+		<property name="cronExpression">
+			<!-- 格式解释：秒 分 时 日 月 年 -->
+			<value>0 0/3 * * * ? </value>
+		</property>
+	</bean>
+	
+	
+	  
+	<!-- 自动检测调度任务 -->
+	<bean id="deviceDischargeAutocheckTask" class="com.station.moudles.quartz.DeviceDischargeAutocheckTask" />
+		<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="deviceDischargeAutocheckTaskMethodInvoking"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="deviceDischargeAutocheckTask" />
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="dischargeAutoCheck" />
+		<property name="concurrent" value="false" />
+	</bean>
+	
+		<!-- 触发器设置 设置这个任务触发器，凌晨3点执行一次 -->
+	<bean id="deviceDischargeAutocheckTaskTriger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="deviceDischargeAutocheckTaskMethodInvoking" />
+		</property>
+		<property name="cronExpression">
+			<!-- 格式解释：秒 分 时 日 月 年 -->
+			<value>0 0 3 * * ? </value>
+		</property>
+	</bean>
+	
+	<!--自动特征测试任务调度-->
+	<bean id="autoPulseDischageSendTask" class="com.station.moudles.quartz.AutoPulseDischageSendTask"></bean>
+	<!-- 定义调度的对象和方法 -->
+	<bean id="autoPulseDischageSendTaskMethodInvoking" 
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="autoPulseDischageSendTask"/>
+		</property>
+		<!--掉用类中的方法-->
+		<property name="targetMethod" value="autoPulseDischageSend"/>
+		<property name="concurrent" value="false" />
+	</bean>
+	
+	<!-- 触发器设置 设置这个任务触发器， -->
+	<bean id="autoPulseDischageSendTaskTriger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="autoPulseDischageSendTaskMethodInvoking" />
+		</property>
+		<property name="cronExpression">
+			<!-- 格式解释：秒 分 时 日 月 年 -->
+			<!--  <value>0 0/1 * * * ? </value>  -->
+			<!--每天22:30分执行  -->
+			<value>0 30 22 ? * * </value> 
+		</property>
+	</bean>
+	
+	 <!--对特征指令进行检索调度-->
+	<bean id="searchAutoPulseDischageSendTask" class="com.station.moudles.quartz.AutoPulseDischageSendTask"></bean>
+	<!-- 定义调度的对象和方法 -->
+	<bean id="searchAutoPulseDischageSendTaskMethodInvoking" 
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="searchAutoPulseDischageSendTask"/>
+		</property>
+	<!-- 	掉用类中的方法  对pulse_send_done发送进行检索 -->
+		<property name="targetMethod" value="searchBatteryGroup"/>
+		<property name="concurrent" value="false" />
+	</bean>
+	
+	<!-- 触发器设置 设置这个任务触发器，凌晨5点执行一次 -->
+	<bean id="searchAutoPulseDischageSendTaskTriger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="searchAutoPulseDischageSendTaskMethodInvoking" />
+		</property>
+		<property name="cronExpression">
+			<!-- 格式解释：秒 分 时 日 月 年 -->
+			<!--  <value>0 0/2 * * * ? </value>  -->
+			<!--每天零晨5:00分执行  -->
+			 <value>0 0 5 * * ? </value> 
+		</property>
+	</bean> 
+	
+	 <!--对自动特征测试的电池组进行模型计算-->
+	<bean id="ModelCalculateAutoPulseDischageSendTask" class="com.station.moudles.quartz.AutoPulseDischageSendTask"></bean>
+	<!-- 定义调度的对象和方法 -->
+	<bean id="ModelCalculateAutoPulseDischageSendTaskMethodInvoking" 
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="ModelCalculateAutoPulseDischageSendTask"/>
+		</property>
+	<!-- 	掉用类中的方法  对pulse_send_done发送进行检索 -->
+		<property name="targetMethod" value="batteryGroupModelCalculate"/>
+		<property name="concurrent" value="false" />
+	</bean>
+	
+	<!-- 触发器设置 设置这个任务触发器，凌晨7点执行一次 -->
+	<bean id="ModelCalculateAutoPulseDischageSendTaskTriger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="ModelCalculateAutoPulseDischageSendTaskMethodInvoking" />
+		</property>
+		<property name="cronExpression">
+			<!-- 格式解释：秒 分 时 日 月 年 -->
+			<!--  <value>0 0/2 * * * ? </value>  -->
+			<!--每天早上7:00分执行  -->
+			 <value>0 0 7 * * ? </value> 
+		</property>
+	</bean> 
+	
+	
+	
+	
+	<!-- ======================== 自动均衡 start ======================== -->
+	<!-- 需要调度的任务 -->
+	<bean id="autoBalanceTask" class="com.station.moudles.quartz.AutoBalanceTask" />
+
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="autoBalanceTaskMethodInvoking"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="autoBalanceTask" />
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<!-- 触发器设置 设置这个任务触发器  10分钟执行一次-->
+	<bean id="autoBalanceTaskTriger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="autoBalanceTaskMethodInvoking" />
+		</property>
+		<property name="cronExpression">
+			<!-- 格式解释：秒 分 时 日 月 年 -->
+			<value>0 0/10 * * * ? </value>
+
+		</property>
+	</bean>
+	<!-- ======================== 自动均衡 end ======================== -->
+	
+	
+	<!-- ======================== 数据检测 start ======================== -->
+	<!-- 需要调度的任务 -->
+
+	<!-- 定义调用对象和调用对象的方法 -->
+	<bean id="dataMonitorTaskMethodInvoking"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="dataMonitorTask" />
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod" value="execute" />
+	</bean>
+
+	<!-- 触发器设置 设置这个任务触发器  30分钟执行一次-->
+	<bean id="dataMonitorTaskTriger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="dataMonitorTaskMethodInvoking" />
+		</property>
+		<property name="cronExpression">
+			<!-- 格式解释：秒 分 时 日 月 年 -->
+			<value>0 0/30 * * * ? </value>
+		</property>
+	</bean>
+	<!-- ======================== 数据检测  end ======================== -->
+	
+
+	<!-- ======================== 调度工厂 ======================== -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<!-- 特征测试，暂时不需要定时做。 -->
+				<!-- <ref bean="pulseDischargeTaskTriger" /> --> 
+				<!-- <ref bean="stationInfoTaskTriger" /> -->
+				 <ref bean="autoBalanceTaskTriger" /> 
+				 <ref bean="deviceDischargeAutocheckTaskTriger"/> 
+				<ref bean="dataMonitorTaskTriger"/> 
+			 	<!-- <ref bean="autoPulseDischageSendTaskTriger"/>  -->
+				<!-- <ref bean="searchAutoPulseDischageSendTaskTriger"/>  -->
+				<!-- <ref bean="ModelCalculateAutoPulseDischageSendTaskTriger"/> --> 
+			</list>
+		</property>
+	</bean>
+
+	<bean class="com.station.common.utils.SpringUtils"></bean>
+	
+	<!-- ======================== redis start ======================== -->
+	<context:component-scan base-package="com.station.common.redis" />	
+
+	 <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		 <property name="maxTotal" value="${redis.maxTotal}" />
+	     <property name="maxIdle" value="${redis.maxIdle}" />
+	     <property name="maxWaitMillis" value="${redis.maxWaitMillis}" />
+	     <property name="testOnBorrow" value="${redis.testOnBorrow}"/>
+	     <property name="testOnReturn" value="${redis.testOnReturn}"/>
+	</bean>
+	
+	<bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">
+        <constructor-arg index="0" ref="jedisPoolConfig" />
+        <constructor-arg index="1">
+            <list>
+                <bean class="redis.clients.jedis.JedisShardInfo">
+                    <constructor-arg name="host" value="${redis.host}" />
+                    <constructor-arg name="port" value="${redis.port}" />
+                    <property name="password" value="${redis.pass}" />
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+    
+    <!-- 数据库缓存管理器 -->
+    <cache:annotation-driven cache-manager="cacheManager"/> 
+    <bean id="redisClientTemplate" class="com.station.common.redis.RedisClientTemplate"/>
+  	<!--  缓存类及缓存定义 -->
+    <bean id="cacheManager" class="com.station.common.redis.RedisCacheManager">
+        <property name="caches">
+            <set>
+                <bean class="com.station.common.redis.RedisCache" p:name="station">
+                	<property name="redisTemplate" ref="redisClientTemplate"/>
+                </bean>
+            </set>
+        </property>
+    </bean>
+	<!-- ======================== redis end ======================== -->
+	
+	<beans profile="develop">
+		<context:property-placeholder location="classpath:/config/context-develop.properties"/>
+	</beans>
+	<beans profile="test">
+		<context:property-placeholder location="classpath:/config/context-test.properties"/>
+	</beans>
+	<beans profile="test57">
+		<context:property-placeholder location="classpath:/config/context-test57.properties"/>
+	</beans>
+	<beans profile="product201">
+		<context:property-placeholder location="classpath:/config/context-product201.properties"/>
+	</beans>
+	<beans profile="product215">
+		<context:property-placeholder location="classpath:/config/context-product215.properties"/>
+	</beans>
+</beans>

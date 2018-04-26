@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.station.moudles.mapper.DischargeAbstractRecordMapper" >
+
+    <resultMap id="BaseResultMap" type="com.station.moudles.entity.DischargeAbstractRecord" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="gprs_id" property="gprsId" jdbcType="VARCHAR" /> 
+        <result column="starttime" property="starttime" jdbcType="TIMESTAMP" />
+        <result column="endtime" property="endtime" jdbcType="TIMESTAMP" />
+        <result column="start_vol" property="startVol" jdbcType="DECIMAL" />
+        <result column="end_vol" property="endVol" jdbcType="DECIMAL" />
+        <result column="record_start_id" property="recordStartId" jdbcType="INTEGER" />
+        <result column="record_end_id" property="recordEndId" jdbcType="INTEGER" />
+        <result column="gen_cur" property="genCur" jdbcType="DECIMAL"/>
+        <result column="discharge_time" property="dischargeTime" jdbcType="DECIMAL"/>
+        <result column="balanceStartTime" property="balanceStartTime" jdbcType="TIMESTAMP"/>
+        <result column="balanceEndTime" property="balanceEndTime" jdbcType="TIMESTAMP"/>
+        <result column="autoBalance" property="autoBalance" jdbcType="TINYINT"/>
+        <result column="newCellCount" property="newCellCount" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, gprs_id, starttime, endtime, start_vol, end_vol, record_start_id, record_end_id,
+        gen_cur,discharge_time,balanceStartTime,balanceEndTime,autoBalance,newCellCount
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select 
+        <include refid="Base_Column_List" />
+        from discharge_abstract_record
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    
+   <select id="getDischargAbstract" resultMap="BaseResultMap" parameterType="com.station.moudles.entity.DischargeAbstractRecord">
+   		select
+   		 <include refid="Base_Column_List" />
+        from discharge_abstract_record
+    	<where>
+    		<if test="gprsId != null">
+			and gprs_id = #{gprsId,jdbcType=VARCHAR}
+			</if>
+			<if test="endtime != null">
+			and endtime &gt;&#61; #{endtime,jdbcType=TIMESTAMP}
+			</if>
+			<if test="endVol != null and dischargeTime != null">
+			and (end_vol &lt;&#61; #{endVol,jdbcType=DECIMAL} 
+			or discharge_time &gt;&#61;  #{dischargeTime,jdbcType=DECIMAL})
+			and discharge_time &lt;&#61; 24 <!--时长小于等于24H  -->
+			</if>
+			<if test="genCur != null">
+			and gen_cur &gt;&#61;  #{maxCur,jdbcType=DECIMAL} 
+			and gen_cur &lt;&#61; #{genCur,jdbcType=DECIMAL}	
+			</if>
+    	</where>    
+   	
+   </select>
+    
+    
+    
+    <select id="selectListSelective" resultMap="BaseResultMap" parameterType="com.station.moudles.entity.DischargeAbstractRecord">
+	select
+	 <include refid="Base_Column_List" />
+	from discharge_abstract_record
+	<where>
+		<if test="gprsId != null">
+			and gprs_id = #{gprsId,jdbcType=VARCHAR}
+		</if>
+		<if test="starttime != null">
+			and starttime = #{starttime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="endtime != null">
+			and endtime = #{endtime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="startVol != null">
+			and start_vol = #{startVol,jdbcType=DECIMAL}
+		</if>
+		<if test="endVol != null">
+			and end_vol = #{endVol,jdbcType=DECIMAL}
+		</if>
+		<if test="recordStartId != null">
+			and record_start_id = #{recordStartId,jdbcType=INTEGER}
+		</if>
+		<if test="recordEndId != null">
+			and record_end_id = #{recordEndId,jdbcType=INTEGER}
+		</if>
+		<if test="genCur != null">
+			and gen_cur = #{genCur,jdbcType=DECIMAL}
+		</if>
+		<if test="dischargeTime != null">
+			and discharge_time = #{dischargeTime,jdbcType=DECIMAL}
+		</if>
+		<if test="balanceStartTime != null">
+			and balanceStartTime = #{balanceStartTime,jdbcType=TIMESTAMP}
+		</if>
+		<if test="balanceEndTime != null">
+			and balanceEndTime = #{balanceEndTime,jdbcType=TIMESTAMP}
+		</if>
+	</where>
+    </select>
+    
+    <select id="selectEndTimeIsNull" resultMap="BaseResultMap" parameterType="com.station.moudles.entity.DischargeAbstractRecord">
+    	select
+		 <include refid="Base_Column_List" />
+		from discharge_abstract_record where endtime is null
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+        delete from discharge_abstract_record
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insertSelective" parameterType="com.station.moudles.entity.DischargeAbstractRecord" >
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into discharge_abstract_record
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="gprsId != null" >
+                gprs_id,
+            </if>
+            <if test="starttime != null" >
+                starttime,
+            </if>
+            <if test="endtime != null" >
+                endtime,
+            </if>
+            <if test="startVol != null" >
+                start_vol,
+            </if>
+            <if test="endVol != null" >
+                end_vol,
+            </if>
+            <if test="recordStartId != null" >
+                record_start_id,
+            </if>
+            <if test="recordEndId != null" >
+                record_end_id,
+            </if>
+            <if test="genCur != null">
+            	gen_cur,
+            </if>
+            <if test="dischargeTime != null">
+            	discharge_time,
+            </if>
+            <if test="balanceStartTime != null">
+			 	balanceStartTime,
+			</if>
+			<if test="balanceEndTime != null">
+				 balanceEndTime,
+			</if>
+			<if test="autoBalance != null">
+				autoBalance,
+			</if>
+			<if test="newCellCount != null">
+				newCellCount,
+			</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="gprsId != null" >
+                #{gprsId,jdbcType=VARCHAR},
+            </if>
+            <if test="starttime != null" >
+                #{starttime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endtime != null" >
+                #{endtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="startVol != null" >
+                #{startVol,jdbcType=DECIMAL},
+            </if>
+            <if test="endVol != null" >
+                #{endVol,jdbcType=DECIMAL},
+            </if>
+            <if test="recordStartId != null" >
+                #{recordStartId,jdbcType=INTEGER},
+            </if>
+            <if test="recordEndId != null" >
+                #{recordEndId,jdbcType=INTEGER},
+            </if>
+             <if test="genCur != null">
+            	#{genCur,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeTime != null">
+            	#{dischargeTime,jdbcType=DECIMAL},
+            </if>
+            <if test="balanceStartTime != null">
+				#{balanceStartTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="balanceEndTime != null">
+				#{balanceEndTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="autoBalance != null">
+				#{autoBalance,jdbcType=TINYINT},
+			</if>
+			<if test="newCellCount != null">
+				#{newCellCount,jdbcType=INTEGER},
+			</if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.station.moudles.entity.DischargeAbstractRecord" >
+        update discharge_abstract_record
+        <set >
+            <if test="gprsId != null" >
+                gprs_id = #{gprsId,jdbcType=VARCHAR},
+            </if>
+            <if test="starttime != null" >
+                starttime = #{starttime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endtime != null" >
+                endtime = #{endtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="startVol != null" >
+                start_vol = #{startVol,jdbcType=DECIMAL},
+            </if>
+            <if test="endVol != null" > 
+                end_vol = #{endVol,jdbcType=DECIMAL},
+            </if>
+            <if test="recordStartId != null" >
+                record_start_id = #{recordStartId,jdbcType=INTEGER},
+            </if>
+            <if test="recordEndId != null" >
+                record_end_id = #{recordEndId,jdbcType=INTEGER},
+            </if>
+            <if test="genCur != null">
+            	gen_cur =#{genCur,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeTime != null">
+            	discharge_time = #{dischargeTime,jdbcType=DECIMAL},
+            </if>
+            <if test="balanceStartTime != null">
+				balanceStartTime = #{balanceStartTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="balanceEndTime != null">
+				balanceEndTime = #{balanceEndTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="autoBalance != null">
+				autoBalance = #{autoBalance,jdbcType=TINYINT},
+			</if>
+			<if test="newCellCount != null">
+				newCellCount = #{newCellCount,jdbcType=INTEGER},
+			</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    
+    
+     <update id="updateByGprsIdSelective" parameterType="com.station.moudles.entity.DischargeAbstractRecord" >
+        update discharge_abstract_record
+        <set >
+            <if test="starttime != null" >
+                starttime = #{starttime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endtime != null" >
+                endtime = #{endtime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="startVol != null" >
+                start_vol = #{startVol,jdbcType=DECIMAL},
+            </if>
+            <if test="endVol != null" > 
+                end_vol = #{endVol,jdbcType=DECIMAL},
+            </if>
+            <if test="recordStartId != null" >
+                record_start_id = #{recordStartId,jdbcType=INTEGER},
+            </if>
+            <if test="recordEndId != null" >
+                record_end_id = #{recordEndId,jdbcType=INTEGER},
+            </if>
+            <if test="genCur != null">
+            	gen_cur =#{genCur,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeTime != null">
+            	discharge_time = #{dischargeTime,jdbcType=DECIMAL},
+            </if>
+             <if test="balanceStartTime != null">
+				balanceStartTime = #{balanceStartTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="balanceEndTime != null">
+				balanceEndTime = #{balanceEndTime,jdbcType=TIMESTAMP},
+			</if>
+            <if test="autoBalance != null">
+				autoBalance = #{autoBalance,jdbcType=TINYINT},
+			</if>
+			<if test="newCellCount != null">
+				newCellCount = #{newCellCount,jdbcType=INTEGER},
+			</if>
+        </set>
+        where gprs_id = #{gprsId,jdbcType=VARCHAR} and endtime is null
+    </update>
+</mapper>
