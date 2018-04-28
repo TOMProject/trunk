@@ -518,10 +518,5 @@
 	<beans profile="test57">
 		<context:property-placeholder location="classpath:/config/context-test57.properties"/>
 	</beans>
-	<beans profile="product201">
-		<context:property-placeholder location="classpath:/config/context-product201.properties"/>
-	</beans>
-	<beans profile="product215">
-		<context:property-placeholder location="classpath:/config/context-product215.properties"/>
-	</beans>
+	
 </beans>
