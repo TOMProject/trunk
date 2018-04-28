@@ -8,6 +8,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Repository;
 
 import redis.clients.jedis.BinaryClient.LIST_POSITION;
@@ -3120,5 +3122,12 @@ public class RedisClientTemplate {
 		}
 		return result;
 	}
-
+    public static void main(String[] args) {
+        ApplicationContext ac =  new ClassPathXmlApplicationContext("classpath:/config/applicationContext.xml");
+        RedisClientTemplate redisClient = (RedisClientTemplate)ac.getBean("redisClientTemplate");
+        redisClient.set("a", "abc");
+        System.out.println(redisClient.get("a"));
+    }
+	
+	
 }

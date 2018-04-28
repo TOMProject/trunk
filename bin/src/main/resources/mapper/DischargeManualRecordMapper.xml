@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.station.moudles.mapper.DischargeManualRecordMapper" >
+
+    <resultMap id="BaseResultMap" type="com.station.moudles.entity.DischargeManualRecord" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="district" property="district" jdbcType="VARCHAR" />
+        <result column="address_coding" property="addressCoding" jdbcType="VARCHAR" />
+        <result column="maintainance_id" property="maintainanceId" jdbcType="VARCHAR" />
+        <result column="address_name" property="addressName" jdbcType="VARCHAR" />
+        <result column="gprs_id" property="gprsId" jdbcType="VARCHAR" />
+        <result column="discharge_start_time" property="dischargeStartTime" jdbcType="TIMESTAMP" />
+        <result column="discharge_end_time" property="dischargeEndTime" jdbcType="TIMESTAMP" />
+        <result column="discharge_forword_vol" property="dischargeForwordVol" jdbcType="DECIMAL" />
+        <result column="discharge_forword_cur" property="dischargeForwordCur" jdbcType="DECIMAL" />
+        <result column="discharge_forword_system_cur" property="dischargeForwordSystemCur" jdbcType="DECIMAL" />
+        <result column="discharge_forword_system_vol" property="dischargeForwordSystemVol" jdbcType="DECIMAL" />
+        <result column="discharge_back_vol" property="dischargeBackVol" jdbcType="DECIMAL" />
+        <result column="discharge_back_cur" property="dischargeBackCur" jdbcType="DECIMAL" />
+        <result column="discharge_back_system_cur" property="dischargeBackSystemCur" jdbcType="DECIMAL" />
+        <result column="discharge_back_system_vol" property="dischargeBackSystemVol" jdbcType="DECIMAL" />
+        <result column="discharge_time" property="dischargeTime" jdbcType="DECIMAL" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="install_time" property="installTime" jdbcType="TIMESTAMP" />
+        <result column="cell_plant" property="cellPlant" jdbcType="VARCHAR" />
+        <result column="cell_type" property="cellType" jdbcType="VARCHAR" />
+        <result column="report_history" property="reportHistory" jdbcType="VARCHAR" />
+        <result column="is_processed" property="isProcessed" jdbcType="INTEGER" />
+        <result column="report_file_name" property="reportFileName" jdbcType="VARCHAR" />
+        <result column="report_remark" property="reportRemark" jdbcType="VARCHAR" />
+        <result column="company_name3" property="companyName3" jdbcType="VARCHAR" />
+        <result column="discharge_person" property="dischargePerson" jdbcType="VARCHAR" />
+  		<result column="load_current" property="loadCurrent" jdbcType="DECIMAL"/>
+  		
+  		<result column="vol_level" property="volLevel" jdbcType="INTEGER"/>
+  		<result column="type_name" property="typeName" jdbcType="INTEGER"/>
+     </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, district, address_coding, maintainance_id, address_name, gprs_id, discharge_start_time, 
+        discharge_end_time, discharge_forword_vol, discharge_forword_cur, discharge_forword_system_cur, 
+        discharge_forword_system_vol, discharge_back_vol, discharge_back_cur, discharge_back_system_cur, 
+        discharge_back_system_vol, discharge_time, remark, install_time, cell_plant, cell_type, 
+        report_history, is_processed, report_file_name, report_remark, company_name3,discharge_person
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select 
+        <include refid="Base_Column_List" />
+        from discharge_manual_record
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    
+    <select id="selectListSelectivePaging" resultMap="BaseResultMap" parameterType="com.station.moudles.vo.search.PageEntity">
+    select dis.*,base.load_current 
+    from base_station_info as base right join (select
+     <include refid="Base_Column_List"/>
+   	 from discharge_manual_record
+     <where>
+     	<if test="district != null" >
+               and district = #{district,jdbcType=VARCHAR}
+            </if>
+            <if test="addressCoding != null" >
+               and address_coding = #{addressCoding,jdbcType=VARCHAR}
+            </if>
+            <if test="maintainanceId != null" >
+               and maintainance_id = #{maintainanceId,jdbcType=VARCHAR}
+            </if>
+            <if test="addressName != null" >
+               and (address_name like #{addressName,jdbcType=VARCHAR}
+               or gprs_id like #{addressName,jdbcType=VARCHAR})
+            </if>
+            <if test="gprsId != null" >
+               and gprs_id = #{gprsId,jdbcType=VARCHAR}
+            </if>
+            <if test="dischargeStartTime != null" >
+               and discharge_start_time = #{dischargeStartTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="dischargeEndTime != null" >
+               and discharge_end_time = #{dischargeEndTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="dischargeForwordVol != null" >
+               and discharge_forword_vol = #{dischargeForwordVol,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeForwordCur != null" >
+               and discharge_forword_cur = #{dischargeForwordCur,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeForwordSystemCur != null" >
+               and discharge_forword_system_cur = #{dischargeForwordSystemCur,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeForwordSystemVol != null" >
+               and discharge_forword_system_vol = #{dischargeForwordSystemVol,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeBackVol != null" >
+               and discharge_back_vol = #{dischargeBackVol,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeBackCur != null" >
+               and discharge_back_cur = #{dischargeBackCol,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeBackSystemCur != null" >
+               and discharge_back_system_cur = #{dischargeBackSystemCur,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeBackSystemVol != null" >
+               and discharge_back_system_vol = #{dischargeBackSystemVol,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeTime != null" >
+               and discharge_time = #{dischargeTime,jdbcType=DECIMAL}
+            </if>
+            <if test="remark != null" >
+               and remark = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="installTime != null" >
+               and install_time = #{installTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="cellPlant != null" >
+               and cell_plant = #{cellPlant,jdbcType=VARCHAR}
+            </if>
+            <if test="cellType != null" >
+               and cell_type = #{cellType,jdbcType=VARCHAR}
+            </if>
+            <if test="reportHistory != null" >
+               and report_history = #{reportHistory,jdbcType=VARCHAR}
+            </if>
+            <if test="isProcessed != null" >
+               and is_processed = #{isProcessed,jdbcType=VARCHAR}
+            </if>
+            <if test="reportFileName != null" >
+               and report_file_name = #{reportFileName,jdbcType=VARCHAR}
+            </if>
+            <if test="reportRemark != null" >
+               and report_remark = #{reportRemark,jdbcType=VARCHAR}
+            </if>
+            <if test="companyName3 != null" >
+               and company_name3 = #{companyName3,jdbcType=VARCHAR}
+            </if>  
+            <if test="dischargePerson != null">
+            	and discharge_person = #{dischargePerson,jdbcType=VARCHAR}
+            </if>      
+     </where>) dis on dis.gprs_id = base.gprs_id 
+ 		<where>
+			<if test="companyId != null">
+				and base.company_id3 =#{companyId,jdbcType=INTEGER}
+			</if>
+			<if test="baseDistrict != null">
+				and base.district = #{baseDistrict,jdbcType=VARCHAR}
+			</if>
+			<if test="city != null">
+				and base.city = #{city,jdbcType=VARCHAR}
+			</if>
+			<if test="province != null">
+				and base.province = #{province,jdbcType=VARCHAR}
+			</if>
+		</where>
+
+    </select>
+    
+    <select id="selectListSelective" resultMap="BaseResultMap"  parameterType="com.station.moudles.entity.DischargeManualRecord">
+      select 
+     <include refid="Base_Column_List"/>
+   	 from discharge_manual_record
+     <where>
+     	<if test="district != null" >
+               and district = #{district,jdbcType=VARCHAR}
+            </if>
+            <if test="addressCoding != null" >
+               and address_coding = #{addressCoding,jdbcType=VARCHAR}
+            </if>
+            <if test="maintainanceId != null" >
+               and maintainance_id = #{maintainanceId,jdbcType=VARCHAR}
+            </if>
+            <if test="addressName != null" >
+               and address_name = #{addressName,jdbcType=VARCHAR}
+            </if>
+            <if test="gprsId != null" >
+               and gprs_id = #{gprsId,jdbcType=VARCHAR}
+            </if>
+            <if test="dischargeStartTime != null" >
+               and discharge_start_time = #{dischargeStartTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="dischargeEndTime != null" >
+               and discharge_end_time = #{dischargeEndTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="dischargeForwordVol != null" >
+               and discharge_forword_vol = #{dischargeForwordVol,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeForwordCur != null" >
+               and discharge_forword_cur = #{dischargeForwordCur,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeForwordSystemCur != null" >
+               and discharge_forword_system_cur = #{dischargeForwordSystemCur,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeForwordSystemVol != null" >
+               and discharge_forword_system_vol = #{dischargeForwordSystemVol,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeBackVol != null" >
+               and discharge_back_vol = #{dischargeBackVol,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeBackCur != null" >
+               and discharge_back_cur = #{dischargeBackCol,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeBackSystemCur != null" >
+               and discharge_back_system_cur = #{dischargeBackSystemCur,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeBackSystemVol != null" >
+               and discharge_back_system_vol = #{dischargeBackSystemVol,jdbcType=DECIMAL}
+            </if>
+            <if test="dischargeTime != null" >
+               and discharge_time = #{dischargeTime,jdbcType=DECIMAL}
+            </if>
+            <if test="remark != null" >
+               and remark = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="installTime != null" >
+               and install_time = #{installTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="cellPlant != null" >
+               and cell_plant = #{cellPlant,jdbcType=VARCHAR}
+            </if>
+            <if test="cellType != null" >
+               and cell_type = #{cellType,jdbcType=VARCHAR}
+            </if>
+            <if test="reportHistory != null" >
+               and report_history = #{reportHistory,jdbcType=VARCHAR}
+            </if>
+            <if test="isProcessed != null" >
+               and is_processed = #{isProcessed,jdbcType=VARCHAR}
+            </if>
+            <if test="reportFileName != null" >
+               and report_file_name = #{reportFileName,jdbcType=VARCHAR}
+            </if>
+            <if test="reportRemark != null" >
+               and report_remark = #{reportRemark,jdbcType=VARCHAR}
+            </if>
+            <if test="companyName3 != null" >
+               and company_name3 = #{companyName3,jdbcType=VARCHAR}
+            </if>
+             <if test="dischargePerson != null">
+            	and discharge_person = #{dischargePerson,jdbcType=VARCHAR}
+            </if> 
+     </where>
+    
+    </select>
+    
+    <select id="selectDischargeDetail" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select dis.*,base.load_current,base.vol_level,base.company_name3 as companyName3,
+		t.type_name
+		from discharge_manual_record as dis
+		left join base_station_info as base on dis.gprs_id  = base.gprs_id
+		left join gprs_config_info as gprs on dis.gprs_id = gprs.gprs_id
+		left join gprs_device_type as t on  gprs.device_type = t.type_code
+        where dis.id = #{id,jdbcType=INTEGER}
+    </select>
+    
+    <select id="findByDischargeManualRecordIds" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+	    select 
+	    <include refid="Base_Column_List" />
+	    from discharge_manual_record
+	    WHERE id in
+	    <foreach item="id" index="idx" collection="array" open="(" separator="," close=")">
+	      #{id}
+	    </foreach>
+  </select>
+    
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from discharge_manual_record
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insertSelective" parameterType="com.station.moudles.entity.DischargeManualRecord" >
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER" >
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into discharge_manual_record
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="district != null" >
+                district,
+            </if>
+            <if test="addressCoding != null" >
+                address_coding,
+            </if>
+            <if test="maintainanceId != null" >
+                maintainance_id,
+            </if>
+            <if test="addressName != null" >
+                address_name,
+            </if>
+            <if test="gprsId != null" >
+                gprs_id,
+            </if>
+            <if test="dischargeStartTime != null" >
+                discharge_start_time,
+            </if>
+            <if test="dischargeEndTime != null" >
+                discharge_end_time,
+            </if>
+            <if test="dischargeForwordVol != null" >
+                discharge_forword_vol,
+            </if>
+            <if test="dischargeForwordCur != null" >
+                discharge_forword_cur,
+            </if>
+            <if test="dischargeForwordSystemCur != null" >
+                discharge_forword_system_cur,
+            </if>
+            <if test="dischargeForwordSystemVol != null" >
+                discharge_forword_system_vol,
+            </if>
+            <if test="dischargeBackVol != null" >
+                discharge_back_vol,
+            </if>
+            <if test="dischargeBackCur != null" >
+                discharge_back_cur,
+            </if>
+            <if test="dischargeBackSystemCur != null" >
+                discharge_back_system_cur,
+            </if>
+            <if test="dischargeBackSystemVol != null" >
+                discharge_back_system_vol,
+            </if>
+            <if test="dischargeTime != null" >
+                discharge_time,
+            </if>
+            <if test="remark != null" >
+                remark,
+            </if>
+            <if test="installTime != null" >
+                install_time,
+            </if>
+            <if test="cellPlant != null" >
+                cell_plant,
+            </if>
+            <if test="cellType != null" >
+                cell_type,
+            </if>
+            <if test="reportHistory != null" >
+                report_history,
+            </if>
+            <if test="isProcessed != null" >
+                is_processed,
+            </if>
+            <if test="reportFileName != null" >
+                report_file_name,
+            </if>
+            <if test="reportRemark != null" >
+                report_remark,
+            </if>
+            <if test="companyName3 != null" >
+                company_name3,
+            </if>
+              <if test="dischargePerson != null">
+            	discharge_person,
+            </if> 
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="district != null" >
+                #{district,jdbcType=VARCHAR},
+            </if>
+            <if test="addressCoding != null" >
+                #{addressCoding,jdbcType=VARCHAR},
+            </if>
+            <if test="maintainanceId != null" >
+                #{maintainanceId,jdbcType=VARCHAR},
+            </if>
+            <if test="addressName != null" >
+                #{addressName,jdbcType=VARCHAR},
+            </if>
+            <if test="gprsId != null" >
+                #{gprsId,jdbcType=VARCHAR},
+            </if>
+            <if test="dischargeStartTime != null" >
+                #{dischargeStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dischargeEndTime != null" >
+                #{dischargeEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dischargeForwordVol != null" >
+                #{dischargeForwordVol,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeForwordCur != null" >
+                #{dischargeForwordCur,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeForwordSystemCur != null" >
+                #{dischargeForwordSystemCur,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeForwordSystemVol != null" >
+                #{dischargeForwordSystemVol,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeBackVol != null" >
+                #{dischargeBackVol,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeBackCur != null" >
+                #{dischargeBackCur,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeBackSystemCur != null" >
+                #{dischargeBackSystemCur,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeBackSystemVol != null" >
+                #{dischargeBackSystemVol,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeTime != null" >
+                #{dischargeTime,jdbcType=DECIMAL},
+            </if>
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="installTime != null" >
+                #{installTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cellPlant != null" >
+                #{cellPlant,jdbcType=VARCHAR},
+            </if>
+            <if test="cellType != null" >
+                #{cellType,jdbcType=VARCHAR},
+            </if>
+            <if test="reportHistory != null" >
+                #{reportHistory,jdbcType=VARCHAR},
+            </if>
+            <if test="isProcessed != null" >
+                #{isProcessed,jdbcType=INTEGER},
+            </if>
+            <if test="reportFileName != null" >
+                #{reportFileName,jdbcType=VARCHAR},
+            </if>
+            <if test="reportRemark != null" >
+                #{reportRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="companyName3 != null" >
+                #{companyName3,jdbcType=VARCHAR},
+            </if>
+              <if test="dischargePerson != null">
+            	#{dischargePerson,jdbcType=VARCHAR},
+            </if> 
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.station.moudles.entity.DischargeManualRecord" >
+        update discharge_manual_record
+        <set >
+            <if test="district != null" >
+                district = #{district,jdbcType=VARCHAR},
+            </if>
+            <if test="addressCoding != null" >
+                address_coding = #{addressCoding,jdbcType=VARCHAR},
+            </if>
+            <if test="maintainanceId != null" >
+                maintainance_id = #{maintainanceId,jdbcType=VARCHAR},
+            </if>
+            <if test="addressName != null" >
+                address_name = #{addressName,jdbcType=VARCHAR},
+            </if>
+            <if test="gprsId != null" >
+                gprs_id = #{gprsId,jdbcType=VARCHAR},
+            </if>
+            <if test="dischargeStartTime != null" >
+                discharge_start_time = #{dischargeStartTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dischargeEndTime != null" >
+                discharge_end_time = #{dischargeEndTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dischargeForwordVol != null" >
+                discharge_forword_vol = #{dischargeForwordVol,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeForwordCur != null" >
+                discharge_forword_cur = #{dischargeForwordCur,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeForwordSystemCur != null" >
+                discharge_forword_system_cur = #{dischargeForwordSystemCur,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeForwordSystemVol != null" >
+                discharge_forword_system_vol = #{dischargeForwordSystemVol,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeBackVol != null" >
+                discharge_back_vol = #{dischargeBackVol,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeBackCur != null" >
+                discharge_back_cur = #{dischargeBackCur,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeBackSystemCur != null" >
+                discharge_back_system_cur = #{dischargeBackSystemCur,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeBackSystemVol != null" >
+                discharge_back_system_vol = #{dischargeBackSystemVol,jdbcType=DECIMAL},
+            </if>
+            <if test="dischargeTime != null" >
+                discharge_time = #{dischargeTime,jdbcType=DECIMAL},
+            </if>
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="installTime != null" >
+                install_time = #{installTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cellPlant != null" >
+                cell_plant = #{cellPlant,jdbcType=VARCHAR},
+            </if>
+            <if test="cellType != null" >
+                cell_type = #{cellType,jdbcType=VARCHAR},
+            </if>
+            <if test="reportHistory != null" >
+                report_history = #{reportHistory,jdbcType=VARCHAR},
+            </if>
+            <if test="isProcessed != null" >
+                is_processed = #{isProcessed,jdbcType=INTEGER},
+            </if>
+            <if test="reportFileName != null" >
+                report_file_name = #{reportFileName,jdbcType=VARCHAR},
+            </if>
+            <if test="reportRemark != null" >
+                report_remark = #{reportRemark,jdbcType=VARCHAR},
+            </if>
+            <if test="companyName3 != null" >
+                company_name3 = #{companyName3,jdbcType=VARCHAR},
+            </if>
+             <if test="dischargePerson != null">
+            	discharge_person = #{dischargePerson,jdbcType=VARCHAR},
+            </if> 
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    
+    
+    <select id="selectOneLatestSelective" resultMap="BaseResultMap"  parameterType="com.station.moudles.entity.DischargeManualRecord">
+      	select 
+    	<include refid="Base_Column_List"/>
+   	 	 from discharge_manual_record
+     	<where>
+            <if test="gprsId != null" >
+               and gprs_id = #{gprsId,jdbcType=VARCHAR}
+            </if>
+            <if test="isProcessed != null" >
+               and is_processed = #{isProcessed,jdbcType=VARCHAR}
+            </if>
+     	</where>
+     	ORDER BY discharge_end_time DESC LIMIT 0,1
+    </select>
+    
+    
+</mapper>
